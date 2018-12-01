@@ -18,7 +18,7 @@ void FileDigger::check_files_eq(FileDigger * that,
                                 bool * thread_end,
                                 std::queue<std::pair<QFileInfo, bool> > *do_out,
                                 std::mutex * mutex) {
-    std::vector<std::vector<std::vector<QFileInfo>::size_type>> equal_files;
+    std::vector<std::vector<size_t>> equal_files;
     uint64_t eq_files_groups = 0;
     bool used_groups = true;
     int files_checked = 0;
@@ -97,7 +97,7 @@ void FileDigger::check_files_eq(FileDigger * that,
                         }
                         if (flag_eq) {
                             if (!added) {
-                                (equal_files).push_back(std::vector({i}));
+                                (equal_files).push_back(std::vector<size_t>({i}));
                             }
                             added = true;
                             (equal_files).back().push_back(j);
