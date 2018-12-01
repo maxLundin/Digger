@@ -16,7 +16,7 @@ FileDigger::FileDigger(QString dir)
 void FileDigger::check_files_eq(FileDigger * that,
                                 std::map<int64_t, std::vector<QFileInfo>> *array,
                                 bool * thread_end,
-                                std::queue<std::pair<QFileInfo, bool> > *do_out,
+                                std::vector<std::pair<QFileInfo, bool> > *do_out,
                                 std::mutex * mutex) {
     std::vector<std::vector<size_t>> equal_files;
     uint64_t eq_files_groups = 0;
@@ -115,7 +115,7 @@ void FileDigger::check_files_eq(FileDigger * that,
                 for (uint64_t h = eq_files_groups ; h < (equal_files).size(); h++){
                     for (std::vector<std::vector<QFileInfo>::size_type>::size_type i = 0; i < (equal_files)[h].size(); i++) {
                         mutex->lock();
-                        (*do_out).push(std::make_pair(std::move(elem.second[(equal_files)[h][i]]), used_groups));
+                        (*do_out).push_back(std::make_pair(std::move(elem.second[(equal_files)[h][i]]), used_groups));
                         mutex->unlock();
                     }
                     used_groups = !used_groups;
@@ -123,7 +123,7 @@ void FileDigger::check_files_eq(FileDigger * that,
             }else{
                 for (uint64_t h = 0 ; h < elem.second.size(); h++){
                     mutex->lock();
-                    (*do_out).push(std::make_pair(std::move(elem.second[h]), used_groups));
+                    (*do_out).push_back(std::make_pair(std::move(elem.second[h]), used_groups));
                     mutex->unlock();
                 }
                 used_groups = !used_groups;
@@ -149,7 +149,7 @@ void FileDigger::do_file_search(){
     auto args = std::bind(&FileDigger::make_groups, this, dira, &same_size, &files_in_directory);
     auto handle = std::thread(args);
     bool thread_end = false;
-    std::queue<std::pair<QFileInfo, bool>> out_queue;
+    std::vector<std::pair<QFileInfo, bool>> out_queue;
     std::mutex mutex;
     handle.join();
 
@@ -221,61 +221,78 @@ void FileDigger::make_groups(FileDigger * that, QDir &dir, std::map<int64_t, std
 
 
 void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
-                           std::queue<std::pair<QFileInfo, bool>> *out_queue,
+                           std::vector<std::pair<QFileInfo, bool>> *out_queue,
                            std::mutex *mutex){
     int files_added = 0;
     bool current_bool = true;
+    bool finished = true;
     QTreeWidgetItem *itemFather;
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     while (!(*thread_end)){
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
         // add group
+
+
+        mutex->lock();
         if ((*out_queue).size()){
-            itemFather = new QTreeWidgetItem();
-            while(true){
-                if (!(*out_queue).empty() && (*out_queue).front().second == current_bool){
+            std::vector<std::pair<QFileInfo, bool>> my_queue;
+            my_queue.reserve(((*out_queue).size()));
+            (*out_queue).swap(my_queue);
+            mutex->unlock();
+            size_t pos = 0;
+            if (finished){
+                itemFather = new QTreeWidgetItem();
+            }
+            while (pos != my_queue.size()){
+                while (pos != my_queue.size() && my_queue[pos].second == current_bool){
                     QTreeWidgetItem *item1 = new QTreeWidgetItem();
-                    auto elem1 = (*out_queue).front().first;
                     ++files_added;
-                    item1->setText(0, elem1.path());
-                    item1->setText(1, elem1.fileName());
-                    item1->setText(2, QString::number(elem1.size()));
+                    item1->setText(0, my_queue[pos].first.path());
+                    item1->setText(1, my_queue[pos].first.fileName());
+                    item1->setText(2, QString::number(my_queue[pos].first.size()));
                     itemFather->addChild(item1);
-                    (*mutex).lock();
-                    (*out_queue).pop();
-                    (*mutex).unlock();
-                }else if (thread_end){
-                    break;
-                } else if (!(*out_queue).empty()){
-                    break;
+                    ++pos;
+                }
+                if (pos != my_queue.size()){
+                    finished = true;
+                    itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
+                    //                itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
+                    emit that->ready_to_add(itemFather);
+                    itemFather = new QTreeWidgetItem();
+                    current_bool = !current_bool;
                 }else{
-                    while ((*out_queue).empty() && !thread_end){
-                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                    }
+                    finished = false;
                 }
             }
-            itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
-            itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
-            emit that->ready_to_add(itemFather);
-            current_bool = !current_bool;
+
+
+        }else{
+            mutex->unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }
 
-    while ((*out_queue).size()){
+
+    size_t pos = 0;
+
+    if (finished){
         itemFather = new QTreeWidgetItem();
-        while (!(*out_queue).empty() && (*out_queue).front().second == current_bool){
+    }
+    std::cout << (*out_queue).size();
+    while (pos!=(*out_queue).size()){
+        while (pos != (*out_queue).size() && (*out_queue)[pos].second == current_bool){
             QTreeWidgetItem *item1 = new QTreeWidgetItem();
-            auto elem1 = (*out_queue).front().first;
             ++files_added;
-            item1->setText(0, elem1.path());
-            item1->setText(1, elem1.fileName());
-            item1->setText(2, QString::number(elem1.size()));
+            item1->setText(0, (*out_queue)[pos].first.path());
+            item1->setText(1, (*out_queue)[pos].first.fileName());
+            item1->setText(2, QString::number((*out_queue)[pos].first.size()));
             itemFather->addChild(item1);
-            (*out_queue).pop();
+            ++pos;
         }
+        finished = true;
         itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
         itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
         emit that->ready_to_add(itemFather);
+        itemFather = new QTreeWidgetItem();
         current_bool = !current_bool;
     }
 

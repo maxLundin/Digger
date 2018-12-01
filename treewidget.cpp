@@ -6,10 +6,9 @@
 #include <iostream>
 
 
-tree_widget::tree_widget(QWidget *parent) : QTreeWidget (parent)
+tree_widget::tree_widget(QWidget *parent) : QTreeWidget (parent), size(0), expanded(false)
 {
     setUniformRowHeights(1);
-    expanded = false;
 }
 
 void tree_widget::open_everything(){
@@ -27,6 +26,11 @@ void tree_widget::add_to_tree(QTreeWidgetItem *data)
     if (data != nullptr){
         insertTopLevelItem(size++, data);
     }
+}
+
+void tree_widget::clear_tree(){
+    clear();
+    size = 0;
 }
 
 QString tree_widget::getFileName(QTreeWidgetItem * selected_item)

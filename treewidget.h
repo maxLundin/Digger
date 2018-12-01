@@ -13,6 +13,8 @@ public:
 
     void add_to_tree(QTreeWidgetItem *);
 
+    void clear_tree();
+
     QString static getFileName(QTreeWidgetItem *);
 
 signals:

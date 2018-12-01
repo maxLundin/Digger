@@ -34,7 +34,7 @@ main_window::main_window(QWidget *parent)
 
 
 #ifdef DEBUG
-    freopen("output.txt","w",stdout);
+   // freopen("output.txt","w",stdout);
 #endif
 
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
@@ -71,23 +71,12 @@ void main_window::select_directory() {
                                                     QString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QFileInfo check_file(dir);
+    ui->actionScan_Directory->setVisible(false);
     if (check_file.exists()) {
 
-        //спроси Сорокина
 
-//        ui->treeWidget->clear();
-        //        tree_widget *a = ui->treeWidget;
-        //        ui->treeWidget->~tree_widget();
-        //        ui->treeWidget = new tree_widget(this);
-        //        ui->treeWidget->
+        ui->treeWidget->clear_tree();
 
-        //        delete a;
-        //        ui->treeWidget->
-
-        //        int temp = ui->treeWidget->topLevelItemCount() - 1;
-        //        for (int i = 0 ; i < temp; i++){
-        //            ui->treeWidget->takeTopLevelItem(1);
-        //        }
 
         ui->actionStopScanning->setVisible(true);
         setup_tree();
@@ -116,6 +105,7 @@ void main_window::close_search(){
     ui->progressBar->hide();
     ui->label->setText(std::move(QString("Finished all ").append(std::to_string(ui->progressBar->maximum()).data()).append(" files.")));
     ui->actionStopScanning->setVisible(false);
+    ui->actionScan_Directory->setVisible(true);
 }
 
 void main_window::update_status_range(int maxRange){
@@ -145,57 +135,6 @@ void main_window::show_data(QTreeWidgetItem *data_out){
     ui->treeWidget->add_to_tree(std::move(data_out));
 }
 
-
-//void main_window::do_hash(QDir &dir, std::map<std::string, std::vector<QFileInfo>> *hashes) {
-//    QFileInfoList list = dir.entryInfoList();
-//    for (QFileInfo file_info : list) {
-//        if (file_info.fileName() == "." || file_info.fileName() == "..") {
-//            continue;
-//        }
-//        if (file_info.isDir()) {
-//#ifdef DEBUG
-//            std::cout << "going into: " << file_info.absoluteFilePath().toStdString() << std::endl;
-//#endif
-//            dir.cd(file_info.absoluteFilePath());
-//            do_hash(dir, hashes);
-//            dir.cdUp();
-//        }
-//        //        if (file_info.is)
-//        if (file_info.isFile()) {
-//#ifdef DEBUG
-//            std::cout << "doing file: " << file_info.absoluteFilePath().toStdString() << std::endl;
-//#endif
-//            std::string hash;
-//            hash_it(file_info.absoluteFilePath(), &hash);
-//            if (hash == "") {
-//                continue;
-//            }
-//            auto iter = (*hashes).find(hash);
-//            if (iter == (*hashes).end()) {
-//                (*hashes).emplace(std::make_pair(hash, std::vector(1, file_info)));
-//            } else {
-//                iter->second.push_back(file_info);
-//            }
-//        }
-//    }
-
-//}
-
-
-//void main_window::hash_it(QString const &str, std::string *out_string) {
-//    CkCrypt2 crypt;
-//    crypt.UnlockComponent("Hello");
-//    crypt.put_HashAlgorithm("sha256");
-//    crypt.put_EncodingMode("hex");
-
-//    (*out_string) = std::move(crypt.hashFileENC(str.toStdString().c_str()));
-//    if (crypt.get_LastMethodSuccess() != true) {
-//        std::cout << "file hash error" << str.toStdString() << std::endl;
-//        std::cout << crypt.lastErrorText() << std::endl;
-//        (*out_string) = std::string();
-//        return;
-//    }
-//}
 
 void main_window::show_about_dialog() {
     QMessageBox::aboutQt(this);

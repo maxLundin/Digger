@@ -24,14 +24,14 @@ public:
     void static check_files_eq(FileDigger * ,
                                std::map<int64_t, std::vector<QFileInfo> > *,
                                bool *,
-                               std::queue<std::pair<QFileInfo, bool> > *,
+                               std::vector<std::pair<QFileInfo, bool> > *,
                                std::mutex *);
 
     void static make_groups(FileDigger * , QDir &, std::map<int64_t, std::vector<QFileInfo>> *, int *);
 
     void static add_to_ui(FileDigger *,
                           bool *,
-                          std::queue<std::pair<QFileInfo, bool>> *,
+                          std::vector<std::pair<QFileInfo, bool>> *,
                           std::mutex *);
 
 

@@ -52,9 +52,6 @@ private slots:
 
     void select_directory();
 
-    // void delete_selected();
-//    void do_hash(QDir &, std::map<std::string, std::vector<QFileInfo>> *);
-//    void hash_it(QString const&, std::string *);
     void show_about_dialog();
 
     void setup_tree();
