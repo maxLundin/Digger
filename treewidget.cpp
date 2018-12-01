@@ -33,6 +33,20 @@ void tree_widget::clear_tree(){
     size = 0;
 }
 
+void tree_widget::delete_files(){
+    int size1 = size;
+    for (int i = 0 ; i < size1; ++i){
+        auto * temp = takeTopLevelItem(i);
+        size--;
+        for (int j = 1 ; j < temp->childCount() ; j++){
+            auto * child = temp->child(j);
+            QFile file(getFileName(child));
+            file.remove();
+        }
+        delete temp;
+    }
+}
+
 QString tree_widget::getFileName(QTreeWidgetItem * selected_item)
 {
 #ifdef WINDOWS

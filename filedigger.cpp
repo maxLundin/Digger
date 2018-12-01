@@ -254,11 +254,15 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
                 }
                 if (pos != my_queue.size()){
                     finished = true;
-                    itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
-                    //                itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
-                    emit that->ready_to_add(itemFather);
-                    itemFather = new QTreeWidgetItem();
-                    current_bool = !current_bool;
+                    if (itemFather->childCount() == 0){
+                           std::cout << "Something is wrong" << std::endl;
+                    }else{
+                        itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
+                        itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
+                        emit that->ready_to_add(itemFather);
+                        itemFather = new QTreeWidgetItem();
+                        current_bool = !current_bool;
+                    }
                 }else{
                     finished = false;
                 }
@@ -277,7 +281,6 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
     if (finished){
         itemFather = new QTreeWidgetItem();
     }
-    std::cout << (*out_queue).size();
     while (pos!=(*out_queue).size()){
         while (pos != (*out_queue).size() && (*out_queue)[pos].second == current_bool){
             QTreeWidgetItem *item1 = new QTreeWidgetItem();

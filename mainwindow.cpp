@@ -34,7 +34,7 @@ main_window::main_window(QWidget *parent)
 
 
 #ifdef DEBUG
-   // freopen("output.txt","w",stdout);
+    freopen("output.txt","w",stdout);
 #endif
 
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
@@ -99,6 +99,10 @@ void main_window::select_directory() {
     } else {
         return;
     }
+}
+
+void main_window::delete_all_dublicates(){
+    ui->treeWidget->delete_files();
 }
 
 void main_window::close_search(){

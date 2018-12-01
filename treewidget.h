@@ -15,6 +15,8 @@ public:
 
     void clear_tree();
 
+    void delete_files();
+
     QString static getFileName(QTreeWidgetItem *);
 
 signals:

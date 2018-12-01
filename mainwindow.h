@@ -56,6 +56,8 @@ private slots:
 
     void setup_tree();
 
+    void delete_all_dublicates();
+
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     FileDigger *worker;
