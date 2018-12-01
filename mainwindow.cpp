@@ -19,8 +19,9 @@ main_window::main_window(QWidget *parent)
 
     QCommonStyle style;
 
-    ui->actionScan_Directory->setIcon(QIcon("../dirdemo/dir/Icons-Land-Vista-Hardware-Devices-Computer.ico"));
-    ui->actionDelete_Files->setIcon(QIcon("../dirdemo/dir/Recycle_Bin_Empty.ico"));
+    ui->actionScan_Directory->setIcon(QIcon("../Digger/dir/Icons-Land-Vista-Hardware-Devices-Computer.ico"));
+    ui->actionDelete_Files->setIcon(QIcon("../Digger/dir/open_things.jpg"));
+
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
     ui->actionStopScanning->setIcon(style.standardIcon(QCommonStyle::SP_BrowserStop));
