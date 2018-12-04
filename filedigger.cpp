@@ -226,7 +226,7 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
     int files_added = 0;
     bool current_bool = true;
     bool finished = true;
-    QTreeWidgetItem *itemFather;
+    std::unique_ptr<QTreeWidgetItem> itemFather;
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     while (!(*thread_end)){
         // add group
@@ -240,7 +240,7 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
             mutex->unlock();
             size_t pos = 0;
             if (finished){
-                itemFather = new QTreeWidgetItem();
+                itemFather.reset(new QTreeWidgetItem());
             }
             while (pos != my_queue.size()){
                 while (pos != my_queue.size() && my_queue[pos].second == current_bool){
@@ -259,8 +259,9 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
                     }else{
                         itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
                         itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
-                        emit that->ready_to_add(itemFather);
-                        itemFather = new QTreeWidgetItem();
+                        emit that->ready_to_add(itemFather.get());
+                        itemFather.release();
+                        itemFather.reset(new QTreeWidgetItem());
                         current_bool = !current_bool;
                     }
                 }else{
@@ -279,7 +280,7 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
     size_t pos = 0;
 
     if (finished){
-        itemFather = new QTreeWidgetItem();
+        itemFather.reset(new QTreeWidgetItem());
     }
     while (pos!=(*out_queue).size()){
         while (pos != (*out_queue).size() && (*out_queue)[pos].second == current_bool){
@@ -294,8 +295,9 @@ void FileDigger::add_to_ui(FileDigger * that, bool *thread_end,
         finished = true;
         itemFather->setText(0,"Number of copies : " + QString::number(itemFather->childCount()));
         itemFather->setText(2,"Size : " + itemFather->child(0)->text(2) + "bytes.");
-        emit that->ready_to_add(itemFather);
-        itemFather = new QTreeWidgetItem();
+        emit that->ready_to_add(itemFather.get());
+        itemFather.release();
+        itemFather.reset(new QTreeWidgetItem());
         current_bool = !current_bool;
     }
 

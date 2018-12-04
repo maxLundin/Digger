@@ -7,5 +7,6 @@ int main(int argc, char *argv[])
     main_window w;
     w.show();
 
-    return a.exec();
+    auto x = a.exec();
+    return x;
 }

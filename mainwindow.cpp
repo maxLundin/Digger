@@ -18,12 +18,15 @@ main_window::main_window(QWidget *parent)
     setGeometry(60, 100, 1600, 600);
 
     QCommonStyle style;
+    stopped = true;
 
     ui->actionScan_Directory->setIcon(QIcon("../Digger/dir/Icons-Land-Vista-Hardware-Devices-Computer.ico"));
     ui->actionDelete_Files->setIcon(QIcon("../Digger/dir/open_things.jpg"));
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
     ui->actionStopScanning->setIcon(style.standardIcon(QCommonStyle::SP_BrowserStop));
+
+
 
     ui->statusBar->addPermanentWidget(ui->label);
     ui->statusBar->addPermanentWidget(ui->progressBar);
@@ -46,7 +49,12 @@ main_window::main_window(QWidget *parent)
             SLOT(on_tree_item_clicked(QTreeWidgetItem *)));
 }
 
-main_window::~main_window() {}
+main_window::~main_window() {
+    stop_scanning();
+    while (!stopped){
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
 
 void main_window::stop_scanning(){
     worker->stop_scanning();
@@ -94,9 +102,10 @@ void main_window::select_directory() {
         connect(worker, SIGNAL (finished()), this, SLOT(close_search()));
 
         ui->label->setText("Scanning selected directory.");
-
+        stopped = false;
         thread->start();
     } else {
+        ui->actionScan_Directory->setVisible(true);
         return;
     }
 }
@@ -110,6 +119,7 @@ void main_window::close_search(){
     ui->label->setText(std::move(QString("Finished all ").append(std::to_string(ui->progressBar->maximum()).data()).append(" files.")));
     ui->actionStopScanning->setVisible(false);
     ui->actionScan_Directory->setVisible(true);
+    stopped = true;
 }
 
 void main_window::update_status_range(int maxRange){
