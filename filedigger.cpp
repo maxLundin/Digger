@@ -29,6 +29,7 @@ void FileDigger::check_files_eq(FileDigger *that,
         std::cout << "doing new group" << std::endl;
 #endif
         if (!that->is_scanning_now) {
+            *thread_end = true;
             return;
         }
         eq_files_groups = (equal_files).size();
@@ -133,6 +134,7 @@ void FileDigger::check_files_eq(FileDigger *that,
         (files_checked) += elem.second.size();
         emit that->status(files_checked);
         if (!that->is_scanning_now) {
+            *thread_end = true;
             return;
         }
     }
