@@ -61,7 +61,8 @@ private slots:
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     FileDigger *worker;
-    bool stopped;
+    QThread *thread;
+    //bool stopped;
 };
 
 #endif // MAINWINDOW_H

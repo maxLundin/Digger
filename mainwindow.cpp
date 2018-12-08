@@ -13,12 +13,11 @@
 #include <QStatusBar>
 
 main_window::main_window(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), worker(nullptr){
+    : QMainWindow(parent), ui(new Ui::MainWindow), worker(nullptr), thread(nullptr){
     ui->setupUi(this);
     setGeometry(60, 100, 1600, 600);
 
     QCommonStyle style;
-    stopped = true;
 
     ui->actionScan_Directory->setIcon(QIcon("../Digger/dir/Icons-Land-Vista-Hardware-Devices-Computer.ico"));
     ui->actionOpenTree->setIcon(QIcon("../Digger/dir/open_things.jpg"));
@@ -50,9 +49,9 @@ main_window::main_window(QWidget *parent)
 }
 
 main_window::~main_window() {
-    stop_scanning();
-    while (!stopped){
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    if (thread != nullptr){
+        stop_scanning();
+        thread->wait();
     }
 }
 
@@ -89,7 +88,7 @@ void main_window::select_directory() {
         ui->actionStopScanning->setVisible(true);
         setup_tree();
 
-        auto *thread = new QThread();
+        thread = new QThread();
         worker = new FileDigger(dir);
         worker->moveToThread(thread);
 
@@ -102,7 +101,6 @@ void main_window::select_directory() {
         connect(worker, SIGNAL (finished()), this, SLOT(close_search()));
 
         ui->label->setText("Scanning selected directory.");
-        stopped = false;
         thread->start();
     } else {
         ui->actionScan_Directory->setVisible(true);
@@ -119,18 +117,14 @@ void main_window::close_search(){
     ui->label->setText(std::move(QString("Finished all ").append(std::to_string(ui->progressBar->maximum()).data()).append(" files.")));
     ui->actionStopScanning->setVisible(false);
     ui->actionScan_Directory->setVisible(true);
-    stopped = true;
 }
 
 void main_window::update_status_range(int maxRange){
     ui->progressBar->show();
     ui->label->show();
     ui->progressBar->setRange(0, maxRange);
-
     ui->label->setText(std::move(QString("files checked : 0 / ")
                                  .append(std::to_string(ui->progressBar->maximum()).data())));
-
-
 }
 
 void main_window::update_status(int value){
