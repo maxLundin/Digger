@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -86,10 +86,10 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionScan_Directory"/>
-   <addaction name="actionDelete_Files"/>
+   <addaction name="actionOpenTree"/>
    <addaction name="actionStopScanning"/>
    <addaction name="separator"/>
   </widget>
@@ -113,7 +113,7 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionDelete_Files">
+  <action name="actionOpenTree">
    <property name="checkable">
     <bool>true</bool>
    </property>

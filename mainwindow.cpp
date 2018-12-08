@@ -21,7 +21,7 @@ main_window::main_window(QWidget *parent)
     stopped = true;
 
     ui->actionScan_Directory->setIcon(QIcon("../Digger/dir/Icons-Land-Vista-Hardware-Devices-Computer.ico"));
-    ui->actionDelete_Files->setIcon(QIcon("../Digger/dir/open_things.jpg"));
+    ui->actionOpenTree->setIcon(QIcon("../Digger/dir/open_things.jpg"));
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
     ui->actionStopScanning->setIcon(style.standardIcon(QCommonStyle::SP_BrowserStop));
@@ -43,7 +43,7 @@ main_window::main_window(QWidget *parent)
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
     connect(ui->actionExit, &QAction::triggered, this, &QWidget::close);
     connect(ui->actionAbout, &QAction::triggered, this, &main_window::show_about_dialog);
-    connect(ui->actionDelete_Files, &QAction::triggered, ui->treeWidget, &tree_widget::open_everything);
+    connect(ui->actionOpenTree, &QAction::triggered, ui->treeWidget, &tree_widget::open_everything);
     connect(ui->actionStopScanning, &QAction::triggered, this, &main_window::stop_scanning);
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem * , int)), ui->treeWidget,
             SLOT(on_tree_item_clicked(QTreeWidgetItem *)));
