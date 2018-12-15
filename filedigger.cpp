@@ -10,6 +10,7 @@
 FileDigger::FileDigger(QString dir) {
     working_dir = dir;
     is_scanning_now = false;
+    stopped = true;
 }
 
 void FileDigger::check_files_eq(FileDigger *that,
@@ -143,6 +144,7 @@ void FileDigger::check_files_eq(FileDigger *that,
 
 
 void FileDigger::do_file_search() {
+    stopped = false;
     is_scanning_now = true;
     QDir dira = QDir(working_dir);
     std::map<int64_t, std::vector<QFileInfo>> same_size;
@@ -177,6 +179,11 @@ void FileDigger::do_file_search() {
     emit finished();
     handle3.join();
     is_scanning_now = false;
+    stopped = true;
+}
+
+bool FileDigger::isStopped(){
+    return stopped;
 }
 
 void FileDigger::stop_scanning() {

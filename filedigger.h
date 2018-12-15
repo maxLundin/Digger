@@ -34,15 +34,15 @@ public:
                           std::vector<std::pair<QFileInfo, bool>> *,
                           std::mutex *);
 
-
+    bool isStopped();
 
     virtual ~FileDigger() = default;
+
 
 public slots:
     void do_file_search();
     void stop_scanning();
 signals:
-    void finished(int);
     void ready_to_add(QTreeWidgetItem *);
     void status(int);
     void status_range(int);
@@ -50,8 +50,8 @@ signals:
 
 private:
     QString working_dir;
-    bool is_scanning_now;
-
+    std::atomic<bool> is_scanning_now;
+    bool stopped;
 };
 
 #endif // FILEDIGGER_H

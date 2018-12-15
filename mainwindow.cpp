@@ -50,8 +50,15 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window() {
     if (thread != nullptr){
-        stop_scanning();
-        thread->wait();
+        if (!thread->isFinished()){
+            stop_scanning();
+            while (!worker->isStopped()){
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            thread->quit();
+            thread->deleteLater();
+        }
     }
 }
 
@@ -93,8 +100,7 @@ void main_window::select_directory() {
         worker->moveToThread(thread);
 
         connect(thread, SIGNAL (started()), worker, SLOT (do_file_search()));
-        connect(worker, SIGNAL (finished(int)), thread, SLOT (quit()));
-        connect(thread, SIGNAL (finished()), thread, SLOT (deleteLater()));
+        connect(worker, SIGNAL (finished()), thread, SLOT (quit()));
         connect(worker, SIGNAL (ready_to_add(QTreeWidgetItem *)), this, SLOT(show_data(QTreeWidgetItem *)));
         connect(worker, SIGNAL (status(int)), this, SLOT(update_status(int)));
         connect(worker, SIGNAL (status_range(int)), this, SLOT(update_status_range(int)));
